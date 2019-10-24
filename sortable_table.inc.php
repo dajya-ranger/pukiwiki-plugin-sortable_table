@@ -5,19 +5,16 @@
  *
  * ソートテーブルプラグイン
  *
- * 作成者：オヤジ戦隊ダジャレンジャー(Twitter:@dajya_ranger_)
- * サイト：SEの良心（https://dajya-ranger.com/）
- *
- * ベース：sortabletable.inc.php 0.3 '06.11.18 taru
- * 　　　　http://taru.s223.xrea.com/index.php?diary%2F2006-11-08
- *
- * 2019/08/29 sortable-table.jsでソート種別の日付指定部分のロジックを修正
- * 2019/08/31 引数にnumstep及びnumnameを追加・実装
- *
- * Version 0.5.2
- * Date    2019/08/27
- * Update  2019/08/31
- * License The same as PukiWiki
+ * @author		オヤジ戦隊ダジャレンジャー <red@dajya-ranger.com>
+ * @copyright	Copyright © 2019, dajya-ranger.com
+ * @link		https://dajya-ranger.com/pukiwiki/sortable-table-plugin/
+ * @example		@linkの内容を参照
+ * @license		Apache License 2.0
+ * @version		0.5.2
+ * @since 		0.5.2 2019/08/31 引数にnumstep及びnumnameを追加・実装
+ * @since 		0.5.1 2019/08/29 sortable-table.jsでソート種別の日付指定部分のロジックを修正
+ * @since 		0.5.0 2019/08/27 暫定初公開（独自拡張・バグFix等）
+ * @since 		0.3.0 2006.11.18 sortabletable.inc.php 0.3（ベースプログラム）
  *
  */
 
