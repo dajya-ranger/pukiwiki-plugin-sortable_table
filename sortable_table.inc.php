@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * sortable_table.inc.php
  *
  * ソートテーブルプラグイン
