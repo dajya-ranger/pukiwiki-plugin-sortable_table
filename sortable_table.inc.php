@@ -14,7 +14,7 @@
  * @since 		0.5.2 2019/08/31 引数にnumstep及びnumnameを追加・実装
  * @since 		0.5.1 2019/08/29 sortable-table.jsでソート種別の日付指定部分のロジックを修正
  * @since 		0.5.0 2019/08/27 暫定初公開（独自拡張・バグFix等）
- * @since 		0.3.0 2006.11.18 sortabletable.inc.php 0.3（ベースプログラム）
+ * @since 		0.3.0 2006/11/18 sortabletable.inc.php 0.3（ベースプログラム）
  *
  */
 
