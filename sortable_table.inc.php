@@ -6,11 +6,12 @@
  * ソートテーブルプラグイン
  *
  * @author		オヤジ戦隊ダジャレンジャー <red@dajya-ranger.com>
- * @copyright	Copyright © 2019, dajya-ranger.com
+ * @copyright	Copyright © 2019-2020, dajya-ranger.com
  * @link		https://dajya-ranger.com/pukiwiki/sortable-table-plugin/
- * @example		@linkの内容を参照
+ * @example		@linkの内容を参照（オプションにwidth(%指定)追加）
  * @license		Apache License 2.0
- * @version		0.5.2
+ * @version		0.6.0
+ * @since 		0.6.0 2020/05/21 引数にwidthを追加・実装
  * @since 		0.5.2 2019/08/31 引数にnumstep及びnumnameを追加・実装
  * @since 		0.5.1 2019/08/29 sortable-table.jsでソート種別の日付指定部分のロジックを修正
  * @since 		0.5.0 2019/08/27 暫定初公開（独自拡張・バグFix等）
@@ -29,6 +30,7 @@ function plugin_sortable_table_params($args) {
 	// 引数チェック＆パラメータ設定用
 	$params = array(
 		'filter'	=> FALSE,	// フィルタ処理
+		'width'		=> -1,		// テーブル幅（％）
 		'autonum'	=> -999999,	// 自動採番No
 		'numstep'	=> 0,		// 採番増分
 		'numname'	=> '',		// 自動採番列名称
@@ -77,24 +79,25 @@ function plugin_sortable_table_params($args) {
 						// 開始番号が指定されている場合
 						$params[$val[0]] = intval($val[1]);
 					} else {
-						// 開始番号が指定されている場合
+						// 開始番号が指定されていない場合
 						$params[$val[0]] = 1;
 					}
 					// 自動採番の場合は、増分と列名称の初期値をセットしておく
 					$params['numstep'] = 1;
 					$params['numname'] = 'No';
 					break;
+				case 'width':
 				case 'numstep':
 				case 'numname':
 				case 'head':
 				case 'odd':
 				case 'even':
 					if (isset($val[1]) && ($val[1] != '')) {
-						// 採番増分・自動採番列名称・カラー指定がある場合
+						// テーブル幅・採番増分・自動採番列名称・カラー指定がある場合
 						$params[$val[0]] = $val[1];
 						break;
 					} else {
-						// 採番増分・自動採番列名称・カラー指定がある場合
+						// テーブル幅・採番増分・自動採番列名称・カラー指定がない場合
 						$params['_error'] = '引数の指定にエラーがあります: ' .  $arg;
 						return $params;
 					}
@@ -118,8 +121,16 @@ function sortable_table_main($table_id, $table_html, $sort_key, $params) {
 	}
 	$st_count++;
 
-	$table_html = preg_replace('/<table class="style_table"/', '<table id="' . $table_id . '" class="style_table"', $table_html);
+	// テーブル幅指定
+	if ($params['width'] > 0) {
+		// テーブル幅（％）指定がある場合
+		$table_html = preg_replace('/<table class="style_table"/', '<table id="' . $table_id . '" class="style_table" width="' . $params['width'] . '%"', $table_html);
+	} else {
+		// テーブル幅（％）指定がない場合
+		$table_html = preg_replace('/<table class="style_table"/', '<table id="' . $table_id . '" class="style_table"', $table_html);
+	}
 
+	// フィルタ指定
 	if ($params['filter']) {
 		// フィルタ処理が有効の場合
 		$js = <<<EOD
