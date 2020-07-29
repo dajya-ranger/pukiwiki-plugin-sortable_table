@@ -10,7 +10,8 @@
  * @link		https://dajya-ranger.com/pukiwiki/sortable-table-plugin/
  * @example		@linkの内容を参照（オプションにwidth(%指定)追加）
  * @license		Apache License 2.0
- * @version		0.6.0
+ * @version		0.7.0
+ * @since 		0.7.0 2020/07/30 JavaScript定義コードを必ず出力し、テーブル背景色をJavaScriptへ移行（JS側の不具合も対応）
  * @since 		0.6.0 2020/05/21 引数にwidthを追加・実装
  * @since 		0.5.2 2019/08/31 引数にnumstep及びnumnameを追加・実装
  * @since 		0.5.1 2019/08/29 sortable-table.jsでソート種別の日付指定部分のロジックを修正
@@ -111,6 +112,13 @@ function plugin_sortable_table_params($args) {
 
 function sortable_table_main($table_id, $table_html, $sort_key, $params) {
 	global $script;
+	global $head_tags;
+
+	// JavaScript定義コードを必ず出力するように修正 v0.7.0
+	$head_tags[] = ' <script type="text/javascript" src="' . SKIN_DIR . 'sortable-table.js"></script>';
+	$head_tags[] = ' <script type="text/javascript" src="' . SKIN_DIR . 'filterable-table.js"></script>';
+
+/*
 	static $st_count = 0;
 
 	if ($st_count == 0) {
@@ -120,8 +128,8 @@ function sortable_table_main($table_id, $table_html, $sort_key, $params) {
 		$head_tags[] = ' <script type="text/javascript" charset="utf-8" src="' . SKIN_DIR . 'filterable-table.js"></script>';
 	}
 	$st_count++;
-
-	// テーブル幅指定
+*/
+	// テーブル幅指定 v0.6.0
 	if ($params['width'] > 0) {
 		// テーブル幅（％）指定がある場合
 		$table_html = preg_replace('/<table class="style_table"/', '<table id="' . $table_id . '" class="style_table" width="' . $params['width'] . '%"', $table_html);
@@ -130,24 +138,29 @@ function sortable_table_main($table_id, $table_html, $sort_key, $params) {
 		$table_html = preg_replace('/<table class="style_table"/', '<table id="' . $table_id . '" class="style_table"', $table_html);
 	}
 
+	// テーブル背景色をJavaScriptへ移行 v0.7.0
+	$odd_color = $params['odd'];
+	$even_color = $params['even'];
+	$back_color = "'$odd_color','$even_color'";
+
 	// フィルタ指定
 	if ($params['filter']) {
-		// フィルタ処理が有効の場合
+		// フィルタ処理が有効の場合（テーブル背景色をJavaScriptへ移行 v0.7.0）
 		$js = <<<EOD
 <script type="text/javascript">
 <!-- <![CDATA[
 var tableid = document.getElementById('{$table_id}');
-var st = new SortableTable(tableid, [{$sort_key}]);
+var st = new SortableTable(tableid,[{$sort_key}],[{$back_color}]);
 var ft = new FilterableTable(tableid);
 //]]>-->
 </script>
 EOD;
 	} else {
-		// フィルタ処理が無効の場合
+		// フィルタ処理が無効の場合（テーブル背景色をJavaScriptへ移行 v0.7.0）
 		$js = <<<EOD
 <script type="text/javascript">
 <!-- <![CDATA[
-var st = new SortableTable(document.getElementById('{$table_id}'),[{$sort_key}]);
+var st = new SortableTable(document.getElementById('{$table_id}'),[{$sort_key}],[{$back_color}]);
 //]]>-->
 </script>
 EOD;
@@ -260,6 +273,7 @@ function plugin_sortable_table_convert() {
 			$sufix = $match[2];
 		} else {
 			// 通常行の場合
+/*
 			$cell_color = '';
 			$row = $row + 1;
 			if ( (($row % 2) != 0) && ($params['odd'] != "") ) {
@@ -270,9 +284,11 @@ function plugin_sortable_table_convert() {
 				// 偶数行で偶数行カラー指定がある場合
 				$cell_color = 'BGCOLOR(' . $params['even'] . '):';
 			}
+*/
 			if ($params['autonum'] != -999999) {
 				// 自動採番No追加
-				$cell = '|' . $cell_color . 'RIGHT:' . strval($autonum);
+				//$cell = '|' . $cell_color . 'RIGHT:' . strval($autonum);
+				$cell = '|' . 'RIGHT:' . strval($autonum);
 				$autonum = $autonum + $params['numstep'];
 			} else {
 				// 自動採番Noなし
@@ -286,6 +302,7 @@ function plugin_sortable_table_convert() {
 		if ( isset($table_cells[0]) && ($table_cells[0] != '') ) {
 			// テーブルデータが存在する場合のみ編集
 			foreach ($table_cells as $table_cell) {
+//				$cell = $cell . '|' . $cell_color . $table_cell;
 				$cell = $cell . '|' . $cell_color . $table_cell;
 			}
 			$table_source[] = $cell . '|' . $sufix;

@@ -6,9 +6,15 @@
 	background-image: url("../image/sort-blank.png");
 }
 .sort-arrow.descending {
+	background-position: center center;
+	background-repeat: no-repeat;
+	margin: 0 2px;
 	background-image: url("../image/sort-descending.png");
 }
 .sort-arrow.ascending {
+	background-position: center center;
+	background-repeat: no-repeat;
+	margin: 0 2px;
 	background-image: url("../image/sort-ascending.png");
 }
 /* filterable-table.js */
