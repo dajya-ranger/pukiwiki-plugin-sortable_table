@@ -51,11 +51,18 @@
 | 2019/08/26 | ソート状態の画像を動的に変更（コード追加）                     |
 | 2019/08/27 | SortableTable.toNumber カンマを除去して数値に変換する          |
 | 2019/08/29 | SortableTable.toDate 様々な日付形式と時刻も対応するため作り替え|
+| 2020/07/30 | テーブルの奇数行・偶数行の背景色をJavaScriptへ移行             |
+|            | ヘッダ行の文字選択を不可に修正                                 |
+|            | 動的にCSSが完全に置き換わらない不具合を修正                    |
 \----------------------------------------------------------------------------*/
 
-function SortableTable(oTable, oSortTypes) {
+function SortableTable(oTable, oSortTypes, oBackColors) {
 
 	this.sortTypes = oSortTypes || [];
+
+	// 2020/07/30 テーブルの奇数行・偶数行の背景色をJavaScriptへ移行
+	this.oddColor = oBackColors[0];
+	this.evenColor = oBackColors[1];
 
 	this.sortColumn = null;
 	this.sortRow = null;
@@ -67,13 +74,12 @@ function SortableTable(oTable, oSortTypes) {
 	};
 
 	if (oTable) {
-		this.setTable( oTable );
+		this.setTable(oTable);
 		this.document = oTable.ownerDocument || oTable.document;
 	}
 	else {
 		this.document = document;
 	}
-
 
 	// only IE needs this
 	var win = this.document.defaultView || this.document.parentWindow;
@@ -83,6 +89,9 @@ function SortableTable(oTable, oSortTypes) {
 	if (win && typeof win.attachEvent != "undefined") {
 		win.attachEvent("onunload", this._onunload);
 	}
+
+	// 戻り値セット
+	return true;
 }
 
 SortableTable.gecko = navigator.product == "Gecko";
@@ -167,6 +176,12 @@ SortableTable.prototype.initHeader = function (oSortTypes) {
 			}
 		}
 	}
+	// 2020/07/30 ヘッダ行の文字選択を不可に修正
+	var thCells = this.element.getElementsByClassName('style_th');
+	for ( var loopIndex = 0; loopIndex < thCells.length; loopIndex++ ) {
+		thCells[loopIndex].style.userSelect = "none";
+	}
+
 	this.updateHeaderArrows();
 };
 
@@ -198,8 +213,9 @@ SortableTable.prototype.updateHeaderArrows = function () {
 			var img = c.lastChild;
 			if (row == this.sortRow && column == this.sortColumn) {
 				// 2019/08/26 ソート状態の画像を動的に変更（コード追加）
+				// 2020/07/30 動的にCSSが完全に置き換わらない不具合を修正
 				img.src = 'image/sort-' + (this.descending ? "descending" : "ascending") + '.png';
-				img.className = "sort-arrow." + (this.descending ? "descending" : "ascending");
+				img.className = "sort-arrow " + (this.descending ? "descending" : "ascending");
 			} else {
 				// 2019/08/26 ソート状態の画像を動的に変更（コード追加）
 				img.src = 'image/sort-blank.png';
@@ -207,6 +223,23 @@ SortableTable.prototype.updateHeaderArrows = function () {
 			}
 		}
 	}
+
+	// 2020/07/30 テーブルの奇数行・偶数行の背景色をJavaScriptへ移行
+	var tableRows = this.element.rows;
+	for ( var rowIndex = 1; rowIndex < tableRows.length; rowIndex++ ) {
+		// ※テーブル1行目はヘッダ行（プラグイン側で背景色をセット）と仮定する
+		var cells = tableRows[rowIndex].cells;
+		for( var colIndex = 0; colIndex < cells.length; colIndex++ ) {
+			if (rowIndex % 2 == 0) {
+				// 偶数行背景色セット
+				cells[colIndex].style.backgroundColor = (this.evenColor) ? this.evenColor : '';
+			} else {
+				// 奇数行背景色セット
+				cells[colIndex].style.backgroundColor = (this.oddColor) ? this.oddColor : '';
+			}
+		}
+	}
+
 };
 
 SortableTable.prototype.headerOnclick = function (e) {
