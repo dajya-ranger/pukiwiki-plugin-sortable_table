@@ -7,8 +7,8 @@
  *
  * @author		オヤジ戦隊ダジャレンジャー <red@dajya-ranger.com>
  * @copyright	Copyright © 2019-2020, dajya-ranger.com
- * @link		https://dajya-ranger.com/pukiwiki/sortable-table-plugin/
- * @example		@linkの内容を参照（オプションにwidth(%指定)追加）
+ * @link		https://dajya-ranger.com/pukiwiki/sortable-table-plugin-verup/
+ * @example		@linkの内容を参照
  * @license		Apache License 2.0
  * @version		0.7.0
  * @since 		0.7.0 2020/07/30 JavaScript定義コードを必ず出力し、テーブル背景色をJavaScriptへ移行（JS側の不具合も対応）
