@@ -118,17 +118,6 @@ function sortable_table_main($table_id, $table_html, $sort_key, $params) {
 	$head_tags[] = ' <script type="text/javascript" src="' . SKIN_DIR . 'sortable-table.js"></script>';
 	$head_tags[] = ' <script type="text/javascript" src="' . SKIN_DIR . 'filterable-table.js"></script>';
 
-/*
-	static $st_count = 0;
-
-	if ($st_count == 0) {
-		// ページ初回出力のみJavaScript定義コード出力
-		global $head_tags;
-		$head_tags[] = ' <script type="text/javascript" charset="utf-8" src="' . SKIN_DIR . 'sortable-table.js"></script>';
-		$head_tags[] = ' <script type="text/javascript" charset="utf-8" src="' . SKIN_DIR . 'filterable-table.js"></script>';
-	}
-	$st_count++;
-*/
 	// テーブル幅指定 v0.6.0
 	if ($params['width'] > 0) {
 		// テーブル幅（％）指定がある場合
