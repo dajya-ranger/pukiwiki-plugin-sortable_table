@@ -226,16 +226,20 @@ SortableTable.prototype.updateHeaderArrows = function () {
 
 	// 2020/07/30 テーブルの奇数行・偶数行の背景色をJavaScriptへ移行
 	var tableRows = this.element.rows;
-	for ( var rowIndex = 1; rowIndex < tableRows.length; rowIndex++ ) {
-		// ※テーブル1行目はヘッダ行（プラグイン側で背景色をセット）と仮定する
+	for ( var rowIndex = 0; rowIndex < tableRows.length; rowIndex++ ) {
 		var cells = tableRows[rowIndex].cells;
 		for( var colIndex = 0; colIndex < cells.length; colIndex++ ) {
-			if (rowIndex % 2 == 0) {
-				// 偶数行背景色セット
-				cells[colIndex].style.backgroundColor = (this.evenColor) ? this.evenColor : '';
-			} else {
-				// 奇数行背景色セット
-				cells[colIndex].style.backgroundColor = (this.oddColor) ? this.oddColor : '';
+			if (cells[colIndex].tagName != 'TH') {
+				// クラス名が「TD」のみ背景色を設定する（ヘッダ行は「TH」）
+				if (rowIndex % 2 == 0) {
+					// 偶数行背景色セット
+					cells[colIndex].style.backgroundColor
+						= (this.evenColor) ? this.evenColor : '';
+				} else {
+					// 奇数行背景色セット
+					cells[colIndex].style.backgroundColor
+						= (this.oddColor) ? this.oddColor : '';
+				}
 			}
 		}
 	}
