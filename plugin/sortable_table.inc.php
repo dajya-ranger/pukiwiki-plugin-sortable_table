@@ -10,7 +10,8 @@
  * @link		https://dajya-ranger.com/pukiwiki/sortable-table-plugin-verup/
  * @example		@linkの内容を参照
  * @license		Apache License 2.0
- * @version		0.7.0
+ * @version		0.7.1
+ * @since 		0.7.1 2020/08/01 HTMLのscriptタグ出力からCDATAセクションを削除
  * @since 		0.7.0 2020/07/30 JavaScript定義コードを必ず出力し、テーブル背景色をJavaScriptへ移行（JS側の不具合も対応）
  * @since 		0.6.0 2020/05/21 引数にwidthを追加・実装
  * @since 		0.5.2 2019/08/31 引数にnumstep及びnumnameを追加・実装
@@ -48,7 +49,7 @@ function plugin_sortable_table_params($args) {
 		foreach ($sort_keys as $sort_key) {
 			if (! (isset($sort_kinds[$sort_key])) ) {
 				// 引数のソート種別が一致しない場合
-				$params['_error'] = '引数の指定にエラーがあります: ' .  $sort_key;
+				$params['_error'] = '引数の指定にエラーがあります: ' . $sort_key;
 				return $params;
 			}
 		}
@@ -59,7 +60,7 @@ function plugin_sortable_table_params($args) {
 			$val = explode("=", $arg);
 			if (! (isset($params[$val[0]])) ) {
 				// オプション名と一致しない場合
-				$params['_error'] = '引数の指定にエラーがあります: ' .  $val[0];
+				$params['_error'] = '引数の指定にエラーがあります: ' . $val[0];
 				return $params;
 			}
 		}
@@ -99,7 +100,7 @@ function plugin_sortable_table_params($args) {
 						break;
 					} else {
 						// テーブル幅・採番増分・自動採番列名称・カラー指定がない場合
-						$params['_error'] = '引数の指定にエラーがあります: ' .  $arg;
+						$params['_error'] = '引数の指定にエラーがあります: ' . $arg;
 						return $params;
 					}
 				}
@@ -135,22 +136,20 @@ function sortable_table_main($table_id, $table_html, $sort_key, $params) {
 	// フィルタ指定
 	if ($params['filter']) {
 		// フィルタ処理が有効の場合（テーブル背景色をJavaScriptへ移行 v0.7.0）
+		// CDATAセクション出力削除 v0.7.1
 		$js = <<<EOD
 <script type="text/javascript">
-<!-- <![CDATA[
-var tableid = document.getElementById('{$table_id}');
-var st = new SortableTable(tableid,[{$sort_key}],[{$back_color}]);
-var ft = new FilterableTable(tableid);
-//]]>-->
+	var tableid = document.getElementById('{$table_id}');
+	var st = new SortableTable(tableid,[{$sort_key}],[{$back_color}]);
+	var ft = new FilterableTable(tableid);
 </script>
 EOD;
 	} else {
 		// フィルタ処理が無効の場合（テーブル背景色をJavaScriptへ移行 v0.7.0）
+		// CDATAセクション出力削除 v0.7.1
 		$js = <<<EOD
 <script type="text/javascript">
-<!-- <![CDATA[
-var st = new SortableTable(document.getElementById('{$table_id}'),[{$sort_key}],[{$back_color}]);
-//]]>-->
+	var st = new SortableTable(document.getElementById('{$table_id}'),[{$sort_key}],[{$back_color}]);
 </script>
 EOD;
 	}
@@ -262,18 +261,6 @@ function plugin_sortable_table_convert() {
 			$sufix = $match[2];
 		} else {
 			// 通常行の場合
-/*
-			$cell_color = '';
-			$row = $row + 1;
-			if ( (($row % 2) != 0) && ($params['odd'] != "") ) {
-				// 奇数行で奇数行カラー指定がある場合
-				$cell_color = 'BGCOLOR(' . $params['odd'] . '):';
-			}
-			if ( (($row % 2) == 0) && ($params['even'] != "") ) {
-				// 偶数行で偶数行カラー指定がある場合
-				$cell_color = 'BGCOLOR(' . $params['even'] . '):';
-			}
-*/
 			if ($params['autonum'] != -999999) {
 				// 自動採番No追加
 				//$cell = '|' . $cell_color . 'RIGHT:' . strval($autonum);
@@ -291,7 +278,6 @@ function plugin_sortable_table_convert() {
 		if ( isset($table_cells[0]) && ($table_cells[0] != '') ) {
 			// テーブルデータが存在する場合のみ編集
 			foreach ($table_cells as $table_cell) {
-//				$cell = $cell . '|' . $cell_color . $table_cell;
 				$cell = $cell . '|' . $cell_color . $table_cell;
 			}
 			$table_source[] = $cell . '|' . $sufix;
@@ -307,5 +293,3 @@ function plugin_sortable_table_convert() {
 
 	return $body;
 }
-
-?>

@@ -54,6 +54,7 @@
 | 2020/07/30 | テーブルの奇数行・偶数行の背景色をJavaScriptへ移行             |
 |            | ヘッダ行の文字選択を不可に修正                                 |
 |            | 動的にCSSが完全に置き換わらない不具合を修正                    |
+| 2020/08/01 | 添付ファイルドラッグ＆ドロップアップロード対応プラグイン対応   |
 \----------------------------------------------------------------------------*/
 
 function SortableTable(oTable, oSortTypes, oBackColors) {
@@ -160,7 +161,16 @@ SortableTable.prototype.initHeader = function (oSortTypes) {
 			this.sortTypes[row][column] = sortType;
 			if (sortType == 'None') { continue; }
 
-			if (c.firstChild.nodeName == 'A') { c.firstChild.href='javascript:void(0)'; }
+			if (c.childNodes.length > 1) {
+				// 2020/08/01 添付ファイルドラッグ＆ドロップアップロード対応プラグイン対応
+				// 子ノードがテキスト以外にある場合はソート状態画像がセット済み
+				// よってソート状態画像が複数セットされるのを回避する
+				continue;
+			}
+
+			if (c.firstChild.nodeName == 'A') {
+				c.firstChild.href='javascript:void(0)';
+			}
 
 			var img = doc.createElement('IMG');
 			// 2019/08/26 ソート状態の画像ファイル名を変更
