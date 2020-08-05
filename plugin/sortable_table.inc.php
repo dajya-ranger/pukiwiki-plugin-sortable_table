@@ -7,10 +7,12 @@
  *
  * @author		オヤジ戦隊ダジャレンジャー <red@dajya-ranger.com>
  * @copyright	Copyright © 2019-2020, dajya-ranger.com
+ * @link		https://dajya-ranger.com/pukiwiki/sortable-table-plugin/
  * @link		https://dajya-ranger.com/pukiwiki/sortable-table-plugin-verup/
  * @example		@linkの内容を参照
  * @license		Apache License 2.0
- * @version		0.7.1
+ * @version		0.7.2
+ * @since 		0.7.2 2020/08/06 引数にnowrapを追加・実装
  * @since 		0.7.1 2020/08/01 HTMLのscriptタグ出力からCDATAセクションを削除
  * @since 		0.7.0 2020/07/30 JavaScript定義コードを必ず出力し、テーブル背景色をJavaScriptへ移行（JS側の不具合も対応）
  * @since 		0.6.0 2020/05/21 引数にwidthを追加・実装
@@ -31,8 +33,9 @@ function plugin_sortable_table_params($args) {
 
 	// 引数チェック＆パラメータ設定用
 	$params = array(
-		'filter'	=> FALSE,	// フィルタ処理
+		'nowrap'	=> FALSE,	// ヘッダ行折返し禁止指定
 		'width'		=> -1,		// テーブル幅（％）
+		'filter'	=> FALSE,	// フィルタ処理
 		'autonum'	=> -999999,	// 自動採番No
 		'numstep'	=> 0,		// 採番増分
 		'numname'	=> '',		// 自動採番列名称
@@ -74,6 +77,9 @@ function plugin_sortable_table_params($args) {
 				// 指定された引数がオプション名と一致する場合
 				switch ($val[0]) {
 				case 'filter':
+					$params[$val[0]] = TRUE;
+					break;
+				case 'nowrap':
 					$params[$val[0]] = TRUE;
 					break;
 				case 'autonum':
@@ -133,23 +139,28 @@ function sortable_table_main($table_id, $table_html, $sort_key, $params) {
 	$even_color = $params['even'];
 	$back_color = "'$odd_color','$even_color'";
 
+	// ヘッダ行折返し禁止指定 v0.7.2
+	$nowrap = $params['nowrap'] ? "true" : "false";
+
 	// フィルタ指定
 	if ($params['filter']) {
 		// フィルタ処理が有効の場合（テーブル背景色をJavaScriptへ移行 v0.7.0）
 		// CDATAセクション出力削除 v0.7.1
+		// ヘッダ行折返し禁止指定 v0.7.2
 		$js = <<<EOD
 <script type="text/javascript">
 	var tableid = document.getElementById('{$table_id}');
-	var st = new SortableTable(tableid,[{$sort_key}],[{$back_color}]);
+	var st = new SortableTable(tableid,[{$sort_key}],[{$back_color}],$nowrap);
 	var ft = new FilterableTable(tableid);
 </script>
 EOD;
 	} else {
 		// フィルタ処理が無効の場合（テーブル背景色をJavaScriptへ移行 v0.7.0）
 		// CDATAセクション出力削除 v0.7.1
+		// ヘッダ行折返し禁止指定 v0.7.2
 		$js = <<<EOD
 <script type="text/javascript">
-	var st = new SortableTable(document.getElementById('{$table_id}'),[{$sort_key}],[{$back_color}]);
+	var st = new SortableTable(document.getElementById('{$table_id}'),[{$sort_key}],[{$back_color}],$nowrap);
 </script>
 EOD;
 	}

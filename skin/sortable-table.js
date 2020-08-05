@@ -55,15 +55,19 @@
 |            | ヘッダ行の文字選択を不可に修正                                 |
 |            | 動的にCSSが完全に置き換わらない不具合を修正                    |
 | 2020/08/01 | 添付ファイルドラッグ＆ドロップアップロード対応プラグイン対応   |
+| 2020/08/06 | ヘッダ行の折返し禁止指定対応                                   |
 \----------------------------------------------------------------------------*/
 
-function SortableTable(oTable, oSortTypes, oBackColors) {
+function SortableTable(oTable, oSortTypes, oBackColors, oNoWrap) {
 
 	this.sortTypes = oSortTypes || [];
 
 	// 2020/07/30 テーブルの奇数行・偶数行の背景色をJavaScriptへ移行
 	this.oddColor = oBackColors[0];
 	this.evenColor = oBackColors[1];
+
+	// 2020/08/06 ヘッダ行の折返し禁止指定対応
+	this.thNoWrap = oNoWrap;
 
 	this.sortColumn = null;
 	this.sortRow = null;
@@ -190,6 +194,11 @@ SortableTable.prototype.initHeader = function (oSortTypes) {
 	var thCells = this.element.getElementsByClassName('style_th');
 	for ( var loopIndex = 0; loopIndex < thCells.length; loopIndex++ ) {
 		thCells[loopIndex].style.userSelect = "none";
+		// 2020/08/06 ヘッダ行の折返し禁止指定対応
+		if (this.thNoWrap) {
+			// 折返し禁止指定がある場合
+			thCells[loopIndex].style.whiteSpace = "nowrap";
+		}
 	}
 
 	this.updateHeaderArrows();
