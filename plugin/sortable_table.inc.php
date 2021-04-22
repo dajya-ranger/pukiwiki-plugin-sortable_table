@@ -6,12 +6,15 @@
  * ソートテーブルプラグイン
  *
  * @author		オヤジ戦隊ダジャレンジャー <red@dajya-ranger.com>
- * @copyright	Copyright © 2019-2020, dajya-ranger.com
+ * @copyright	Copyright © 2019-2021, dajya-ranger.com
  * @link		https://dajya-ranger.com/pukiwiki/sortable-table-plugin/
  * @link		https://dajya-ranger.com/pukiwiki/sortable-table-plugin-verup/
  * @example		@linkの内容を参照
  * @license		Apache License 2.0
- * @version		0.7.2
+ * @version		0.7.3
+ * @since 		0.7.3 2021/04/13 テーブル定義行中にコメント行があった場合に自動採番値が狂うバグを対処
+ * @since 		0.7.3 2021/04/13 ヘッダ行カラー指定がない＆自動採番指定がない場合に表が崩れるバグを対処
+ * @since 		0.7.3 2021/04/13 任意のカラムをソート対象にしない仕様を追加
  * @since 		0.7.2 2020/08/06 引数にnowrapを追加・実装
  * @since 		0.7.1 2020/08/01 HTMLのscriptタグ出力からCDATAセクションを削除
  * @since 		0.7.0 2020/07/30 JavaScript定義コードを必ず出力し、テーブル背景色をJavaScriptへ移行（JS側の不具合も対応）
@@ -50,7 +53,8 @@ function plugin_sortable_table_params($args) {
 	if ( isset($sort_arg[0]) && ($sort_arg[0] != '') ) {
 		$sort_keys = explode("|", $sort_arg);
 		foreach ($sort_keys as $sort_key) {
-			if (! (isset($sort_kinds[$sort_key])) ) {
+			if (! empty($sort_key) && ! (isset($sort_kinds[$sort_key])) ) {
+				// 任意のカラムをソート対象にしない仕様を追加 v0.7.3
 				// 引数のソート種別が一致しない場合
 				$params['_error'] = '引数の指定にエラーがあります: ' . $sort_key;
 				return $params;
@@ -222,6 +226,10 @@ function plugin_sortable_table_convert() {
 	$table_source = array();
 	$table_rows = explode("\n", $param_source);
 	foreach ($table_rows as $table_row) {
+		// テーブル定義行中にコメント行があった場合に自動採番値が狂うバグを対処
+		// v0.7.3
+		if (substr($table_row, 0, 2) == '//') continue;
+
 		preg_match('/^\|(.+)\|([hHfFcC]?)$/', $table_row, $match);
 		if ($match[2] != "") {
 			// ヘッダ・フッタ・カラム定義行の場合
@@ -239,7 +247,7 @@ function plugin_sortable_table_convert() {
 					$cell_color = 'BGCOLOR(' . $params['head'] . '):';
 				} else {
 					// ヘッダ行カラー指定がない
-					if ($params['autonum'] != -1) {
+					if ($params['autonum'] != -999999) {
 						// 自動採番No追加
 						$cell = '|~'  . $params['numname'];
 					} else {
@@ -274,7 +282,6 @@ function plugin_sortable_table_convert() {
 			// 通常行の場合
 			if ($params['autonum'] != -999999) {
 				// 自動採番No追加
-				//$cell = '|' . $cell_color . 'RIGHT:' . strval($autonum);
 				$cell = '|' . 'RIGHT:' . strval($autonum);
 				$autonum = $autonum + $params['numstep'];
 			} else {
